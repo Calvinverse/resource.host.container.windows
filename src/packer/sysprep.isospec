@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<iso>
+    <name>sysprep</name>
+    <files>
+        <file src="${DirBuildTempIso}\*.*" target="" />
+        <file src="${DirBuildTemp}\chef*.msi" target="" />
+    </files>
+</iso>
