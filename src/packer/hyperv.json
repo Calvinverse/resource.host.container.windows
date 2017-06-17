@@ -30,7 +30,7 @@
             "secondary_iso_images": [
                 "{{ user `dir_deploy` }}/sysprep.iso"
             ],
-            "shutdown_command": "IF EXIST a:\\run-sysprep.cmd (CALL a:\\run-sysprep.cmd) ELSE (IF EXIST e:\\run-sysprep.cmd (CALL e:\\run-sysprep.cmd) ELSE (CALL f:\\run-sysprep.cmd)) &IF \"%ERRORLEVEL%\" == \"0\" (ECHO \"Shutdown script succeeded with exit code = %ERRORLEVEL%\" &EXIT 0) ELSE (ECHO \"Shutdown script failed with exit code = %ERRORLEVEL%\" &EXIT %ERRORLEVEL%)",
+            "shutdown_command": "IF EXIST a:\\run-sysprep.cmd (CALL a:\\run-sysprep.cmd) ELSE (IF EXIST d:\\run-sysprep.cmd (CALL d:\\run-sysprep.cmd) ELSE (CALL e:\\run-sysprep.cmd)) &IF \"%ERRORLEVEL%\" == \"0\" (ECHO \"Shutdown script succeeded with exit code = %ERRORLEVEL%\" &EXIT 0) ELSE (ECHO \"Shutdown script failed with exit code = %ERRORLEVEL%\" &EXIT %ERRORLEVEL%)",
             "shutdown_timeout": "5m",
             "switch_name": "{{user `vm_switch_name`}}",
             "type": "hyperv-vmcx",
@@ -42,30 +42,49 @@
     ],
     "provisioners": [
         {
-            "inline": "$item = Get-ChildItem -Path d: -Filter *.msi | Select-Object -First 1; Copy-Item $item.FullName c:/Windows/Temp/chef.msi",
+            "inline": "New-Item -Path c:/temp -ItemType Directory; Copy-Item 'd:/*' c:/temp -Recurse",
             "type": "powershell"
         },
         {
             "elevated_password": "{{ user `admin_password` }}",
             "elevated_user": "{{ user `admin_username` }}",
-            "inline": "powershell.exe -Command \"Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait\"",
+            "inline": "Start-Process 'msiexec' -ArgumentList '/qb /i c:\\temp\\chef.msi' -NoNewWindow -Wait",
             "type": "powershell"
         },
         {
-            "cookbook_paths": [
-                "{{ user `dir_cookbooks_vendors` }}"
-            ],
-            "execute_command": "c:/opscode/chef/bin/chef-solo.bat --no-color -c {{.ConfigPath}} -j {{.JsonPath}}",
-            "guest_os_type": "windows",
-            "install_command": "echo do nothing",
-            "run_list": [
-                "resource_container_host_windows::default"
-            ],
-            "type": "chef-solo"
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "& c:\\temp\\chefservice.exe -install ",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "& c:\\temp\\eis-chef.exe --local-mode --config c:\\temp\\client.rb --override-runlist \"resource_container_host_windows::default\" --log-level info ",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "& c:\\temp\\chefservice.exe -uninstall ",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "Start-Process 'msiexec' -ArgumentList '/qb /x C:\\temp\\chef.msi' -NoNewWindow -Wait",
+            "type": "powershell"
         },
         {
             "type": "powershell",
-            "inline": "powershell.exe -Command \"Start-Process 'msiexec' -ArgumentList '/qb /x C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait\""
+            "elevated_user": "{{user `admin_username`}}",
+            "elevated_password": "{{user `admin_password`}}",
+            "scripts": [
+                "{{ user `dir_temp` }}/iso/PrepareFor-DiskOptimization.ps1",
+                "{{ user `dir_temp` }}/iso/Invoke-Defrag.ps1",
+                "{{ user `dir_temp` }}/iso/Invoke-DiskOptimization.ps1",
+                "{{ user `dir_temp` }}/iso/Invoke-SDelete.ps1"
+            ]
         }
     ]
 }
