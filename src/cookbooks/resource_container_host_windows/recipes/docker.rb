@@ -17,12 +17,12 @@ directory docker_base_directory do
 end
 
 cookbook_file "#{docker_base_directory}\\docker.exe" do
-  source 'docker\\docker.exe'
+  source 'docker/docker.exe'
   action :create
 end
 
 cookbook_file "#{docker_base_directory}\\dockerd.exe" do
-  source 'docker\\dockerd.exe'
+  source 'docker/dockerd.exe'
   action :create
 end
 

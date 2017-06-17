@@ -15,11 +15,11 @@ describe 'resource_container_host_windows::docker' do
     end
 
     it 'creates docker.exe in the docker ops directory' do
-      expect(chef_run).to create_cookbook_file("#{docker_base_path}\\#{service_name}.exe").with_source("docker\\#{service_name}.exe")
+      expect(chef_run).to create_cookbook_file("#{docker_base_path}\\#{service_name}.exe").with_source("docker/#{service_name}.exe")
     end
 
     it 'creates dockerd.exe in the docker ops directory' do
-      expect(chef_run).to create_cookbook_file("#{docker_base_path}\\#{service_daemon_name}.exe").with_source("docker\\#{service_daemon_name}.exe")
+      expect(chef_run).to create_cookbook_file("#{docker_base_path}\\#{service_daemon_name}.exe").with_source("docker/#{service_daemon_name}.exe")
     end
   end
 
