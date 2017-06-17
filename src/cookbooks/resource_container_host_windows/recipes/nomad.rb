@@ -16,9 +16,10 @@ service_password = node['service']['nomad_user_password']
 powershell_script 'nomad_user_with_password_that_does_not_expire' do
   code <<~POWERSHELL
     $user = '#{service_username}'
+    $password = '#{service_password}'
     $ObjOU = [ADSI]"WinNT://$env:ComputerName"
     $objUser = $objOU.Create("User", $user)
-    $objUser.setpassword(#{service_password})
+    $objUser.setpassword($password)
     $objUser.UserFlags = 64 + 65536 # ADS_UF_PASSWD_CANT_CHANGE + ADS_UF_DONT_EXPIRE_PASSWD
     $objUser.SetInfo()
   POWERSHELL
@@ -30,7 +31,7 @@ powershell_script 'nomad_user_grant_service_logon_rights' do
   code <<~POWERSHELL
     $ErrorActionPreference = 'Stop'
 
-    $userName = "#{service_username}"
+    $userName = '#{service_username}'
 
     $tempPath = "c:\\temp"
     if (-not (Test-Path $tempPath))
