@@ -7,6 +7,9 @@
 # Copyright 2017, P. van der Velde
 #
 
+# Allow communication via WinRM
+node.default['firewall']['allow_winrm'] = true
+
 # Allow communication on the loopback address (127.0.0.1 and ::1)
 node.default['firewall']['allow_loopback'] = true
 
@@ -26,6 +29,6 @@ end
 firewall_rule 'winrm' do
   command :allow
   description 'Allow WinRM traffic'
-  dest_port 5989
+  dest_port 5985
   direction :in
 end

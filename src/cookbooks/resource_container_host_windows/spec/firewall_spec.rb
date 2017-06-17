@@ -13,7 +13,7 @@ describe 'resource_container_host_windows::firewall' do
     it 'opens the WinRM TCP port' do
       expect(chef_run).to create_firewall_rule('winrm').with(
         command: :allow,
-        dest_port: 5989,
+        dest_port: 5985,
         direction: :in,
         protocol: :tcp
       )
