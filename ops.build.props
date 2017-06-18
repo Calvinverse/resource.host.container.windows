@@ -161,7 +161,7 @@
     <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
         <ArchiveFilesToCopy Include="$(RepositoryArchive)\windows.2016-$(VersionWindows)-$(VersionWindowsBaseResource).zip">
             <Destination>$(DirBuildTempVmBase)</Destination>
-            <Hash>05519652C73F67C54688A57290374F6ECE710FFB529830A5A16B78D872190B6A</Hash>
+            <Hash>E33E00DA2070395788D129FD98D41D77E2AF0D2BBFB34B36D8CAF3FCA9A47A82</Hash>
             <HashAlgorithm>SHA256</HashAlgorithm>
         </ArchiveFilesToCopy>
     </ItemGroup>
@@ -210,6 +210,18 @@
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\windows.2016\packer_variables.json">
             <Template>$(DirSrcPacker)\packer_variables.json</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(DirBuildTempIso)\setupcomplete.cmd">
+            <Template>$(DirBuildTempUnattend)\scripts\setupcomplete.cmd</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(DirBuildTempIso)\autounattend.xml">
+            <Template>$(DirBuildTempUnattend)\unattend\prepare_image_autounattend.xml</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(DirBuildTempIso)\sysprep-unattend.xml">
+            <Template>$(DirBuildTempUnattend)\unattend\sysprep_image_autounattend.xml</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
     </ItemGroup>
