@@ -120,17 +120,17 @@ try
     $machineIp = MachineIp @commonParameterSwitches
 
     # Create 'client_connections.json' file that stores the connectivity for consul
-    "{ `"advertise_addr`": `"$machineIp`", `"bind_addr`": `"$machineIp`" }"  | Out-File 'c:\meta\consul\client_connections.json'
+    "{ `"advertise_addr`": `"$machineIp`", `"bind_addr`": `"$machineIp`" }"  | Out-File 'c:\meta\consul\client_connections.json' -Encoding ascii
 
     # Create 'client_connections.hcl' file that stores the connectivity for nomad
 @"
-bind_addr = `"$machineIp`"
+bind_addr = "$machineIp"
 advertise {
-    http = \\"$machineIp\\"
-    rpc = \\"$machineIp\\"
-    serf = \\"$machineIp\\"
+    http = "$machineIp"
+    rpc = "$machineIp"
+    serf = "$machineIp"
 }
-"@  | Out-File 'c:\meta\nomad\client_connections.hcl'
+"@  | Out-File 'c:\meta\nomad\client_connections.hcl' -Encoding ascii
 
     # Find the CD
     $dvdDriveLetter = Find-DvdDriveLetter @commonParameterSwitches
@@ -145,31 +145,17 @@ advertise {
         # Disable WinRM in the firewall
     }
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_location.json') -Destination 'c:\meta\consul\client_location.json'
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_secrets.json') -Destination 'c:\meta\consul\client_secrets.json'
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_location.json') -Destination 'c:\meta\consul\client_location.json' -Force
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_secrets.json') -Destination 'c:\meta\consul\client_secrets.json' -Force
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl'
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl'
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl' -Force
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl' -Force
 
     # Copy the script that will be used to create the Doker network
 
     EnableAndStartService -serviceName 'consul'
     EnableAndStartService -serviceName 'nomad'
-}
-catch
-{
-    $ErrorRecord=$Error[0]
-    $ErrorRecord | Format-List * -Force
-    $ErrorRecord.InvocationInfo |Format-List *
-    $Exception = $ErrorRecord.Exception
-    for ($i = 0; $Exception; $i++, ($Exception = $Exception.InnerException))
-    {
-        "$i" * 80
-        $Exception |Format-List * -Force
-    }
-}
-finally
-{
+
     try
     {
         Set-Service `
@@ -186,5 +172,17 @@ finally
     catch
     {
         Write-Error "Failed to stop the service. Error was $($_.Exception.ToString())"
+    }
+}
+catch
+{
+    $ErrorRecord=$Error[0]
+    $ErrorRecord | Format-List * -Force
+    $ErrorRecord.InvocationInfo |Format-List *
+    $Exception = $ErrorRecord.Exception
+    for ($i = 0; $Exception; $i++, ($Exception = $Exception.InnerException))
+    {
+        "$i" * 80
+        $Exception |Format-List * -Force
     }
 }
