@@ -30,4 +30,12 @@ describe 'resource_container_host_windows::docker' do
       expect(chef_run).to run_powershell_script('docker_as_service')
     end
   end
+
+  context 'install the windows feature' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+
+    it 'containers ' do
+      expect(chef_run).to install_windows_feature('Containers')
+    end
+  end
 end

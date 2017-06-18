@@ -38,5 +38,9 @@ powershell_script 'docker_as_service' do
   POWERSHELL
 end
 
+windows_feature 'Containers' do
+  action :install
+end
+
 # The docker network is set in the provisioning step because we need to set the IP range to something
 # sensible
