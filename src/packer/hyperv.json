@@ -76,7 +76,6 @@
             "type": "powershell"
         },
         {
-            "type": "powershell",
             "elevated_user": "{{user `admin_username`}}",
             "elevated_password": "{{user `admin_password`}}",
             "scripts": [
@@ -84,7 +83,12 @@
                 "{{ user `dir_temp` }}/iso/Invoke-Defrag.ps1",
                 "{{ user `dir_temp` }}/iso/Invoke-DiskOptimization.ps1",
                 "{{ user `dir_temp` }}/iso/Invoke-SDelete.ps1"
-            ]
+            ],
+            "type": "powershell"
+        },
+        {
+            "restart_timeout": "10m",
+            "type": "windows-restart"
         }
     ]
 }
