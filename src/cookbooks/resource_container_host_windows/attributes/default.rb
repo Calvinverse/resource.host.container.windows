@@ -9,7 +9,10 @@ default['paths']['meta'] = meta_base_path
 ops_base_path = 'c:\\ops'
 default['paths']['ops_base'] = ops_base_path
 
-# Consul
+#
+# CONSUL
+#
+
 default['service']['consul_user_name'] = 'consul_user'
 default['service']['consul_user_password'] = SecureRandom.uuid
 
@@ -28,13 +31,38 @@ default['paths']['consul_checks'] = "#{consul_config_path}\\checks"
 
 default['file_name']['consul_config_file'] = 'consul_default.json'
 
-# Docker
+#
+# DOCKER
+#
+
 default['service']['docker'] = 'docker'
 
 docker_base_path = "#{ops_base_path}\\docker"
 default['paths']['docker_base'] = docker_base_path
 
-# Nomad
+#
+# FIREWALL
+#
+
+# Allow communication via WinRM
+default['firewall']['allow_winrm'] = true
+
+# Allow communication on the loopback address (127.0.0.1 and ::1)
+default['firewall']['allow_loopback'] = true
+
+# Do not allow MOSH connections
+default['firewall']['allow_mosh'] = false
+
+# do not allow SSH
+default['firewall']['allow_ssh'] = false
+
+# No communication via IPv6 at all
+default['firewall']['ipv6_enabled'] = false
+
+#
+# NOMAD
+#
+
 default['service']['nomad_user_name'] = 'nomad_user'
 default['service']['nomad_user_password'] = SecureRandom.uuid
 
@@ -52,7 +80,10 @@ default['paths']['nomad_config'] = nomad_config_path
 
 default['file_name']['nomad_config_file'] = 'nomad_default.hcl'
 
-# Provisioning
+#
+# PROVISIONING
+#
+
 default['service']['provisioning'] = 'provisioning'
 
 provisioning_base_path = "#{ops_base_path}\\provisioning"

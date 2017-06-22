@@ -162,10 +162,17 @@ file "#{consul_bin_directory}\\#{consul_config_file}" do
     {
       "data_dir": "#{consul_data_directory_json_escaped}",
 
-      "domain": "consulverse",
-
       "disable_remote_exec": true,
       "disable_update_check": true,
+
+      "dns_config": {
+        "allow_stale": true,
+        "max_stale": "87600h",
+        "node_ttl": "10s",
+        "service_ttl": {
+          "*": "10s"
+        }
+      },
 
       "log_level" : "debug",
 

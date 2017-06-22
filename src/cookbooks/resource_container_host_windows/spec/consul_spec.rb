@@ -132,10 +132,17 @@ describe 'resource_container_host_windows::consul' do
       {
         "data_dir": "c:\\\\ops\\\\consul\\\\data",
 
-        "domain": "consulverse",
-
         "disable_remote_exec": true,
         "disable_update_check": true,
+
+        "dns_config": {
+          "allow_stale": true,
+          "max_stale": "87600h",
+          "node_ttl": "10s",
+          "service_ttl": {
+            "*": "10s"
+          }
+        },
 
         "log_level" : "debug",
 
