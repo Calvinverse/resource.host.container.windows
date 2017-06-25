@@ -277,6 +277,14 @@ firewall_rule 'consul-http' do
   direction :in
 end
 
+firewall_rule 'consul-dns' do
+  command :allow
+  description 'Allow Consul DNS traffic'
+  dest_port 8600
+  direction :in
+  protocol :udp
+end
+
 firewall_rule 'consul-rpc' do
   command :allow
   description 'Allow Consul rpc LAN traffic'

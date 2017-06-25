@@ -165,6 +165,15 @@ describe 'resource_container_host_windows::consul' do
       )
     end
 
+    it 'opens the Consul DNS port' do
+      expect(chef_run).to create_firewall_rule('consul-dns').with(
+        command: :allow,
+        dest_port: 8600,
+        direction: :in,
+        protocol: :udp
+      )
+    end
+
     it 'opens the Consul rpc port' do
       expect(chef_run).to create_firewall_rule('consul-rpc').with(
         command: :allow,
