@@ -22,6 +22,9 @@ powershell_script 'nomad_user_with_password_that_does_not_expire' do
     $objUser.setpassword($password)
     $objUser.UserFlags = 64 + 65536 # ADS_UF_PASSWD_CANT_CHANGE + ADS_UF_DONT_EXPIRE_PASSWD
     $objUser.SetInfo()
+
+    $group = [ADSI]"WinNT://$($env:ComputerName)/administrators,group"
+    $group.Add("WinNT://$($env:ComputerName)/$($user),user")
   POWERSHELL
 end
 
