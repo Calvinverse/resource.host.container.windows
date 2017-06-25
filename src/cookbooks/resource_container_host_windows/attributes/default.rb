@@ -10,6 +10,17 @@ ops_base_path = 'c:\\ops'
 default['paths']['ops_base'] = ops_base_path
 
 #
+# ACRYLIC
+#
+
+acrylic_base_path = "#{ops_base_path}\\acrylic"
+default['paths']['acrylic_base'] = acrylic_base_path
+
+default['paths']['acrylic_logs'] = "#{logs_path}\\acrylic"
+
+default['file_name']['acrylic_config_file'] = 'AcrylicConfiguration.ini'
+
+#
 # CONSUL
 #
 
