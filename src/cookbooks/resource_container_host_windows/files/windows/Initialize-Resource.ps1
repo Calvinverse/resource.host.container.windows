@@ -14,7 +14,7 @@ $ErrorActionPreference = 'Stop'
 
 $commonParameterSwitches =
     @{
-        Verbose = $PSBoundParameters.ContainsKey('Verbose');
+        Verbose = $true;
         Debug = $false;
         ErrorAction = "Stop"
     }
@@ -76,7 +76,7 @@ function Find-DvdDriveLetter
     return $cd.Drive
 }
 
-function MachineIp
+function Get-MachineIp
 {
     [CmdletBinding()]
     param(
@@ -113,11 +113,83 @@ function MachineIp
     return $result
 }
 
+function New-DockerNetwork
+{
+    [CmdletBinding()]
+    param(
+        [string] $dvdDriveLetter
+    )
+
+    $ErrorActionPreference = 'Stop'
+
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            Debug = $false;
+            ErrorAction = "Stop"
+        }
+
+    # Set the docker network
+}
+
+function Set-DnsIpAddresses
+{
+    [CmdletBinding()]
+    param(
+    )
+
+    $ErrorActionPreference = 'Stop'
+
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            Debug = $false;
+            ErrorAction = "Stop"
+        }
+
+    # Get all the physical network adapters that provide IPv4 services, are enabled and are the preferred network interface (because that's what acrylic will be
+    # transmitting on).
+    $adapter = Get-NetAdapter -Physical | Where-Object { Get-NetIPAddress -InterfaceIndex $_.ifIndex -AddressFamily IPv4 -AddressState Preferred -ErrorAction SilentlyContinue }
+
+    # Add the acrylic IP address to the list of DNS servers and make sure it's the first one so that it gets the first go at
+    # resolving all the DNS queries.
+    $localhost = '127.0.0.1'
+    $serverDnsAddresses = @( $localhost )
+    Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses $serverDnsAddresses -Verbose
+}
+
+function Update-AcrylicConfiguration
+{
+    [CmdletBinding()]
+    param(
+        [string] $dvdDriveLetter
+    )
+
+    $ErrorActionPreference = 'Stop'
+
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            Debug = $false;
+            ErrorAction = "Stop"
+        }
+
+    $acrylicConfig = 'c:\ops\acrylic\acrylicconfiguration.ini'
+
+    $dnsConfig = Get-Content (Join-Path $dvdDriveLetter 'dns.json') | Out-String | ConvertFrom-Json
+
+    $dnsConfigText = Get-Content $acrylicConfig | Out-String
+    $dnsConfigText = $dnsConfigText.Replace('${CONSUL_DOMAIN}', $dnsConfig.consul_domain)
+    $dnsConfigText = $dnsConfigText.Replace('${SECOND_DNS_IP}', $dnsConfig.second_dns_ip)
+    $dnsConfigText = $dnsConfigText.Replace('${THIRD_DNS_IP}', $dnsConfig.third_dns_ip)
+    $dnsConfigText | Out-File -FilePath $acrylicConfig -Force
+}
+
 # -------------------------- Script start ------------------------------------
 
 try
 {
-    $machineIp = MachineIp @commonParameterSwitches
+    $machineIp = Get-MachineIp @commonParameterSwitches
 
     # Create 'client_connections.json' file that stores the connectivity for consul
     "{ `"advertise_addr`": `"$machineIp`", `"bind_addr`": `"$machineIp`" }"  | Out-File 'c:\meta\consul\client_connections.json' -Encoding ascii
@@ -145,16 +217,20 @@ advertise {
         # Disable WinRM in the firewall
     }
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_location.json') -Destination 'c:\meta\consul\client_location.json' -Force
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_secrets.json') -Destination 'c:\meta\consul\client_secrets.json' -Force
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_location.json') -Destination 'c:\meta\consul\client_location.json' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_secrets.json') -Destination 'c:\meta\consul\client_secrets.json' -Force @commonParameterSwitches
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl' -Force
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl' -Force
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl' -Force @commonParameterSwitches
 
-    # Copy the script that will be used to create the Doker network
+    Update-AcrylicConfiguration -dvdDriveLetter $dvdDriveLetter @commonParameterSwitches
+    Set-DnsIpAddresses @commonParameterSwitches
 
-    EnableAndStartService -serviceName 'consul'
-    EnableAndStartService -serviceName 'nomad'
+    New-DockerNetwork -dvdDriveLetter $dvdDriveLetter @commonParameterSwitches
+
+    EnableAndStartService -serviceName 'consul' @commonParameterSwitches
+    EnableAndStartService -serviceName 'AcrylicServiceController' @commonParameterSwitches
+    EnableAndStartService -serviceName 'nomad' @commonParameterSwitches
 
     try
     {
