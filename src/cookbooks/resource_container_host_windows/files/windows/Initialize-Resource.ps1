@@ -158,33 +158,6 @@ function Set-DnsIpAddresses
     Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses $serverDnsAddresses -Verbose
 }
 
-function Update-AcrylicConfiguration
-{
-    [CmdletBinding()]
-    param(
-        [string] $dvdDriveLetter
-    )
-
-    $ErrorActionPreference = 'Stop'
-
-    $commonParameterSwitches =
-        @{
-            Verbose = $PSBoundParameters.ContainsKey('Verbose');
-            Debug = $false;
-            ErrorAction = "Stop"
-        }
-
-    $acrylicConfig = 'c:\ops\acrylic\acrylicconfiguration.ini'
-
-    $dnsConfig = Get-Content (Join-Path $dvdDriveLetter 'dns.json') | Out-String | ConvertFrom-Json
-
-    $dnsConfigText = Get-Content $acrylicConfig | Out-String
-    $dnsConfigText = $dnsConfigText.Replace('${CONSUL_DOMAIN}', $dnsConfig.consul_domain)
-    $dnsConfigText = $dnsConfigText.Replace('${SECOND_DNS_IP}', $dnsConfig.second_dns_ip)
-    $dnsConfigText = $dnsConfigText.Replace('${THIRD_DNS_IP}', $dnsConfig.third_dns_ip)
-    $dnsConfigText | Out-File -FilePath $acrylicConfig -Force
-}
-
 # -------------------------- Script start ------------------------------------
 
 try
@@ -223,13 +196,14 @@ advertise {
     Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl' -Force @commonParameterSwitches
     Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl' -Force @commonParameterSwitches
 
-    Update-AcrylicConfiguration -dvdDriveLetter $dvdDriveLetter @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'unbound\unbound_zones.conf') -Destination 'c:\meta\unbound\unbound_zones.conf' -Force @commonParameterSwitches
+
     Set-DnsIpAddresses @commonParameterSwitches
 
     New-DockerNetwork -dvdDriveLetter $dvdDriveLetter @commonParameterSwitches
 
     EnableAndStartService -serviceName 'consul' @commonParameterSwitches
-    EnableAndStartService -serviceName 'AcrylicServiceController' @commonParameterSwitches
+    EnableAndStartService -serviceName 'unbound' @commonParameterSwitches
     EnableAndStartService -serviceName 'nomad' @commonParameterSwitches
 
     try

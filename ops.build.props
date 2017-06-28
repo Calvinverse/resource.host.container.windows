@@ -145,15 +145,18 @@
             <HashAlgorithm>SHA256</HashAlgorithm>
             <Unzip>false</Unzip>
         </HttpFilesToCopy>
-        <HttpFilesToCopy Include="https://sourceforge.net/projects/acrylic/files/Acrylic/0.9.35/Acrylic-Portable.zip/download">
-            <Destination>$(DirBuildTempCookbooks)\resource_container_host_windows\files\windows\acrylic</Destination>
-            <Hash>50F67A7FABF5D7B42F6B0CE7B19403F734AB6FB419D4B6DFF2DFC649ADEAED46</Hash>
+        <HttpFilesToCopy Include="http://www.unbound.net/downloads/unbound-1.6.3.zip">
+            <Destination>$(DirBuildTempCookbooks)\resource_container_host_windows\files\windows\unbound</Destination>
+            <Hash>9E3873F82D33079FF0DB75135D4D3F83285ECDDCDFDEC736CE71C7C9C5E10355</Hash>
             <HashAlgorithm>SHA256</HashAlgorithm>
-            <Name>acrylic.zip</Name>
             <Unzip>true</Unzip>
         </HttpFilesToCopy>
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
+        <FilesToCopy
+            Include="E:\documents\Petrik\downloads\windows_amd64\nomad.exe">
+            <Destination>$(DirBuildTempCookbooks)\resource_container_host_windows\files\windows</Destination>
+        </FilesToCopy>
         <FilesToCopy
             Exclude="$(DirSrcCookbooks)\**\metadata.rb"
             Include="$(DirSrcCookbooks)\**\*.*">

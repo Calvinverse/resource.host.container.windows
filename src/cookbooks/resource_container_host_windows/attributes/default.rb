@@ -10,17 +10,6 @@ ops_base_path = 'c:\\ops'
 default['paths']['ops_base'] = ops_base_path
 
 #
-# ACRYLIC
-#
-
-acrylic_base_path = "#{ops_base_path}\\acrylic"
-default['paths']['acrylic_base'] = acrylic_base_path
-
-default['paths']['acrylic_logs'] = "#{logs_path}\\acrylic"
-
-default['file_name']['acrylic_config_file'] = 'AcrylicConfiguration.ini'
-
-#
 # CONSUL
 #
 
@@ -103,3 +92,22 @@ default['paths']['provisioning_service'] = "#{provisioning_base_path}\\service"
 
 provisioning_logs_path = "#{logs_path}\\provisioning"
 default['paths']['provisioning_logs'] = provisioning_logs_path
+
+#
+# UNBOUND
+#
+
+default['service']['unbound_user_name'] = 'unbound_user'
+default['service']['unbound_user_password'] = SecureRandom.uuid
+
+default['service']['unbound'] = 'unbound'
+
+unbound_base_path = "#{ops_base_path}\\unbound"
+default['paths']['unbound_base'] = unbound_base_path
+
+default['paths']['unbound_logs'] = "#{logs_path}\\unbound"
+
+unbound_config_path = "#{meta_base_path}\\unbound"
+default['paths']['unbound_config'] = unbound_config_path
+
+default['file_name']['unbound_config_file'] = 'unbound.conf'
