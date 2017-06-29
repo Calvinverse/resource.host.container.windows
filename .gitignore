@@ -1,0 +1,4 @@
+packages/
+build/
+berks/
+src/cookbooks/resource_container_host_windows/.bundle/
