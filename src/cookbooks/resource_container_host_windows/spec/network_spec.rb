@@ -260,6 +260,10 @@ describe 'resource_container_host_windows::network' do
           # Harden against queries that fall under dnssec-signed nxdomain names.
           harden-below-nxdomain: yes
 
+          # if yes, the above default do-not-query-address entries are present.
+          # if no, localhost can be queried (for testing and debugging).
+          do-not-query-localhost: no
+
           # By default, for a number of zones a small default 'nothing here'
           # reply is built-in.  Query traffic is thus blocked.  If you
           # wish to serve such zone you can unblock them by uncommenting one
