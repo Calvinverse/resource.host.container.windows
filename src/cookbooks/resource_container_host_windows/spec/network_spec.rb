@@ -18,6 +18,10 @@ describe 'resource_container_host_windows::network' do
   context 'create the unbound locations' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
+    it 'creates the unbound config directory' do
+      expect(chef_run).to create_directory(unbound_config_directory)
+    end
+
     it 'creates the unbound base directory' do
       expect(chef_run).to create_directory(unbound_base_path)
     end
