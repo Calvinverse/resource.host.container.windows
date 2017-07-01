@@ -18,6 +18,10 @@ describe 'resource_container_host_windows::network' do
   context 'create the unbound locations' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
+    it 'creates the unbound config directory' do
+      expect(chef_run).to create_directory(unbound_config_directory)
+    end
+
     it 'creates the unbound base directory' do
       expect(chef_run).to create_directory(unbound_base_path)
     end
@@ -55,7 +59,7 @@ describe 'resource_container_host_windows::network' do
           # whitespace is not necessary, but looks cleaner.
 
           # verbosity number, 0 is least verbose. 1 is default, 4 is maximum.
-          verbosity: 2
+          verbosity: 1
 
           # specify the interfaces to answer queries from by ip-address.
           # The default is to listen to localhost (127.0.0.1 and ::1).
