@@ -133,7 +133,6 @@ end
 # CONFIGURATION
 #
 
-# We need to multiple-escape the escape character because of ruby string and regex etc. etc. See here: http://stackoverflow.com/a/6209532/539846
 unbound_config_file = node['file_name']['unbound_config_file']
 file "#{unbound_base_directory}\\#{unbound_config_file}" do
   action :create
@@ -150,7 +149,7 @@ file "#{unbound_base_directory}\\#{unbound_config_file}" do
         # whitespace is not necessary, but looks cleaner.
 
         # verbosity number, 0 is least verbose. 1 is default, 4 is maximum.
-        verbosity: 2
+        verbosity: 1
 
         # specify the interfaces to answer queries from by ip-address.
         # The default is to listen to localhost (127.0.0.1 and ::1).
