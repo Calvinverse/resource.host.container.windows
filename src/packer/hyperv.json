@@ -1,0 +1,94 @@
+{
+    "variables": {
+        "host_ip": null,
+
+        "vm_import_directory": null,
+        "vm_name": "containerhost-windows2016",
+        "vm_switch_name": "internal_switch",
+
+        "admin_username": "admin",
+        "admin_password": "admin",
+
+        "dir_cookbooks_src": "src/cookbooks",
+        "dir_cookbooks_vendors": "packages/vendor/cookbooks",
+        "dir_deploy": null,
+        "dir_http_user": null,
+        "dir_temp": null,
+        "dir_vm_import": null
+    },
+    "builders": [
+        {
+            "boot_wait": "5s",
+            "boot_command": [],
+            "clone_from_vmxc_path": "{{ user `dir_vm_import` }}",
+            "communicator": "winrm",
+            "generation": 2,
+            "guest_additions_mode": "disable",
+            "http_directory": "{{ user `dir_http_user` }}",
+            "output_directory": "{{ user `dir_temp` }}/{{ user `vm_name` }}",
+            "ram_size": 2048,
+            "secondary_iso_images": [
+                "{{ user `dir_deploy` }}/sysprep.iso"
+            ],
+            "shutdown_command": "IF EXIST a:\\run-sysprep.cmd (CALL a:\\run-sysprep.cmd) ELSE (IF EXIST d:\\run-sysprep.cmd (CALL d:\\run-sysprep.cmd) ELSE (CALL e:\\run-sysprep.cmd)) &IF \"%ERRORLEVEL%\" == \"0\" (ECHO \"Shutdown script succeeded with exit code = %ERRORLEVEL%\" &EXIT 0) ELSE (ECHO \"Shutdown script failed with exit code = %ERRORLEVEL%\" &EXIT %ERRORLEVEL%)",
+            "shutdown_timeout": "5m",
+            "switch_name": "{{user `vm_switch_name`}}",
+            "type": "hyperv-vmcx",
+            "vm_name": "{{ user `vm_name` }}",
+            "winrm_password": "{{ user `admin_password` }}",
+            "winrm_timeout": "2h",
+            "winrm_username": "{{ user `admin_username` }}"
+        }
+    ],
+    "provisioners": [
+        {
+            "inline": "New-Item -Path c:/temp -ItemType Directory; Copy-Item 'd:/*' c:/temp -Recurse",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "Start-Process 'msiexec' -ArgumentList '/qb /i c:\\temp\\chef.msi' -NoNewWindow -Wait",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "& c:\\temp\\chefservice.exe -install ",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "& c:\\temp\\eis-chef.exe --local-mode --config c:\\temp\\client.rb --override-runlist \"resource_container_host_windows::default\" --log-level info ",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "& c:\\temp\\chefservice.exe -uninstall ",
+            "type": "powershell"
+        },
+        {
+            "elevated_password": "{{ user `admin_password` }}",
+            "elevated_user": "{{ user `admin_username` }}",
+            "inline": "Start-Process 'msiexec' -ArgumentList '/qb /x C:\\temp\\chef.msi' -NoNewWindow -Wait",
+            "type": "powershell"
+        },
+        {
+            "elevated_user": "{{user `admin_username`}}",
+            "elevated_password": "{{user `admin_password`}}",
+            "scripts": [
+                "{{ user `dir_temp` }}/iso/PrepareFor-DiskOptimization.ps1",
+                "{{ user `dir_temp` }}/iso/Invoke-Defrag.ps1",
+                "{{ user `dir_temp` }}/iso/Invoke-DiskOptimization.ps1",
+                "{{ user `dir_temp` }}/iso/Invoke-SDelete.ps1"
+            ],
+            "type": "powershell"
+        },
+        {
+            "restart_timeout": "10m",
+            "type": "windows-restart"
+        }
+    ]
+}
