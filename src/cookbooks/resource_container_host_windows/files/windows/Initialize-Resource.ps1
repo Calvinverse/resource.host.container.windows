@@ -190,11 +190,11 @@ advertise {
         # Disable WinRM in the firewall
     }
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_location.json') -Destination 'c:\meta\consul\client_location.json' -Force @commonParameterSwitches
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul_client_secrets.json') -Destination 'c:\meta\consul\client_secrets.json' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul\client\consul_client_location.json') -Destination 'c:\meta\consul\client_location.json' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul\client\consul_client_secrets.json') -Destination 'c:\meta\consul\client_secrets.json' -Force @commonParameterSwitches
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl' -Force @commonParameterSwitches
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad\client\nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad\client\nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl' -Force @commonParameterSwitches
 
     Copy-Item -Path (Join-Path $dvdDriveLetter 'unbound\unbound_zones.conf') -Destination 'c:\meta\unbound\unbound_zones.conf' -Force @commonParameterSwitches
 
