@@ -165,7 +165,7 @@ try
     $machineIp = Get-MachineIp @commonParameterSwitches
 
     # Create 'client_connections.json' file that stores the connectivity for consul
-    "{ `"advertise_addr`": `"$machineIp`", `"bind_addr`": `"$machineIp`" }"  | Out-File 'c:\meta\consul\client_connections.json' -Encoding ascii
+    "{ `"advertise_addr`": `"$machineIp`", `"bind_addr`": `"$machineIp`" }"  | Out-File 'c:\meta\consul\connections.json' -Encoding ascii
 
     # Create 'client_connections.hcl' file that stores the connectivity for nomad
 @"
@@ -175,7 +175,7 @@ advertise {
     rpc = "$machineIp"
     serf = "$machineIp"
 }
-"@  | Out-File 'c:\meta\nomad\client_connections.hcl' -Encoding ascii
+"@  | Out-File 'c:\meta\nomad\connections.hcl' -Encoding ascii
 
     # Find the CD
     $dvdDriveLetter = Find-DvdDriveLetter @commonParameterSwitches
@@ -190,11 +190,12 @@ advertise {
         # Disable WinRM in the firewall
     }
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul\client\consul_client_location.json') -Destination 'c:\meta\consul\client_location.json' -Force @commonParameterSwitches
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul\client\consul_client_secrets.json') -Destination 'c:\meta\consul\client_secrets.json' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul\consul_region.json') -Destination 'c:\meta\consul\region.json' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul\consul_secrets.json') -Destination 'c:\meta\consul\secrets.json' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'consul\client\consul_client_location.json') -Destination 'c:\meta\consul\location.json' -Force @commonParameterSwitches
 
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad\client\nomad_client_location.hcl') -Destination 'c:\meta\nomad\client_location.hcl' -Force @commonParameterSwitches
-    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad\client\nomad_client_secrets.hcl') -Destination 'c:\meta\nomad\client_secrets.hcl' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad\nomad_region.hcl') -Destination 'c:\meta\nomad\region.hcl' -Force @commonParameterSwitches
+    Copy-Item -Path (Join-Path $dvdDriveLetter 'nomad\nomad_secrets.hcl') -Destination 'c:\meta\nomad\secrets.hcl' -Force @commonParameterSwitches
 
     Copy-Item -Path (Join-Path $dvdDriveLetter 'unbound\unbound_zones.conf') -Destination 'c:\meta\unbound\unbound_zones.conf' -Force @commonParameterSwitches
 
