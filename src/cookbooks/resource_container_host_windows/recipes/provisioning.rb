@@ -108,7 +108,7 @@ file "#{provisioning_service_directory}\\#{win_service_name}.xml" do
   action :create
 end
 
-# Create the event log source for the nomad service. We'll create it now because the service runs as a normal user
+# Create the event log source for the provisioning service. We'll create it now because the service runs as a normal user
 # and is as such not allowed to create eventlog sources
 registry_key "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\services\\eventlog\\Application\\#{service_name}" do
   action :create
